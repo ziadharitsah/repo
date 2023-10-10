@@ -1,9 +1,8 @@
 import 'package:app/app/bloc/authenticated/auth_bloc.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:app/resources/views/posts/story.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_network/image_network.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -13,6 +12,30 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  int _selectedTab = 0;
+
+  static const List _pages = [
+    Story(),
+    Center(
+      child: Text("About"),
+    ),
+    Center(
+      child: Text("Products"),
+    ),
+    Center(
+      child: Text("Contact"),
+    ),
+    Center(
+      child: Text("Settings"),
+    ),
+  ];
+
+  _changeTab(int index) {
+    setState(() {
+      _selectedTab = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     context.read<AuthBloc>().add(UserData());
@@ -21,75 +44,37 @@ class _HomeState extends State<Home> {
       builder: (context, state) {
         if (state is UserLoaded) {
           return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.amber,
-              leading: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      state.models.user.profilePhotoUrl,
-                      scale: 10.0),
-                ),
-              ),
-              title: Text("Nama : ${state.models.user.name}"),
-              actions: [
-                IconButton(
-                    icon: const Icon(EvaIcons.logOutOutline),
-                    onPressed: () {
-                      BlocProvider.of<AuthBloc>(context).add(
-                        LoggedOut(),
-                      );
-                    })
+            body: _pages[_selectedTab],
+            bottomNavigationBar: BottomNavigationBar(
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              iconSize: 30.0,
+              currentIndex: _selectedTab,
+              onTap: (index) => _changeTab(index),
+              selectedItemColor: Colors.black,
+              unselectedItemColor: Colors.grey,
+              items: const [
+                BottomNavigationBarItem(
+                    activeIcon: Icon(EvaIcons.home),
+                    icon: Icon(EvaIcons.homeOutline),
+                    label: "Home"),
+                BottomNavigationBarItem(
+                    activeIcon: Icon(EvaIcons.search),
+                    icon: Icon(EvaIcons.searchOutline),
+                    label: "About"),
+                BottomNavigationBarItem(
+                    activeIcon: Icon(EvaIcons.video),
+                    icon: Icon(EvaIcons.videoOutline),
+                    label: "Product"),
+                BottomNavigationBarItem(
+                    activeIcon: Icon(EvaIcons.shoppingBag),
+                    icon: Icon(EvaIcons.shoppingBagOutline),
+                    label: "Contact"),
+                BottomNavigationBarItem(
+                    activeIcon: Icon(EvaIcons.person),
+                    icon: Icon(EvaIcons.personOutline),
+                    label: "Settings"),
               ],
-            ),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(state.models.user.email),
-                  Container(
-                    height: 90,
-                    width: 90,
-                    decoration: BoxDecoration(
-                      image: state.models.user.profilePhotoUrl != 'fasle'
-                          ? DecorationImage(
-                              image: NetworkImage(
-                                  state.models.user.profilePhotoUrl),
-                              fit: BoxFit.cover,
-                            )
-                          : const DecorationImage(
-                              scale: 10.0,
-                              image: NetworkImage(
-                                'assets/images/photo_border.png',
-                              ),
-                            ),
-                    ),
-                  ),
-                  ImageNetwork(
-                    image: state.models.user.profilePhotoUrl,
-                    height: 150,
-                    width: 150,
-                    duration: 1500,
-                    curve: Curves.easeIn,
-                    onPointer: true,
-                    debugPrint: true,
-                    fullScreen: false,
-                    fitAndroidIos: BoxFit.cover,
-                    fitWeb: BoxFitWeb.cover,
-                    borderRadius: BorderRadius.circular(70),
-                    onLoading: const CircularProgressIndicator(
-                      color: Colors.indigoAccent,
-                    ),
-                    onError: const Icon(
-                      Icons.error,
-                      color: Colors.red,
-                    ),
-                    onTap: () {
-                      debugPrint("©gabriel_patrick_souza");
-                    },
-                  ),
-                ],
-              ),
             ),
           );
         }
