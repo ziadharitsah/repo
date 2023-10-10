@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class RequestRegister {
@@ -31,4 +32,9 @@ class RequestRegister {
         "password": password,
         "password_confirmation": passwordConfirmation,
       };
+
+  @override
+  String toString() {
+    return 'RequestRegister(name: $name, email: $email, password: $password, passwordConfirmation: $passwordConfirmation)';
+  }
 }

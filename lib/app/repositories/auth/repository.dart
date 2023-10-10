@@ -39,12 +39,13 @@ class ApiDataSource {
   Future<ApiResponse> register(RequestRegister request) async {
     ApiResponse apiResponse = ApiResponse();
     try {
-      final response = await http.post(Uri.parse(registerUrl),
-          headers: {
-            'Accept': 'application/json',
-            // 'Content-Type': 'application/json',
-          },
-          body: request.toMap());
+      final response =
+          await http.post(Uri.parse('http://192.168.1.7:8000/api/register'),
+              headers: {
+                'Accept': 'application/json',
+                // 'Content-Type': 'application/json',
+              },
+              body: request.toMap());
 
       switch (response.statusCode) {
         case 200:
@@ -71,9 +72,9 @@ class ApiDataSource {
   Future<ApiResponse> user() async {
     ApiResponse apiResponse = ApiResponse();
     try {
-      var token = await hasToken();
+      String token = await hasToken();
       final response = await http.get(
-        Uri.parse(userUrl),
+        Uri.parse('http://192.168.1.7:8000/api/user'),
         headers: {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token'
@@ -98,12 +99,12 @@ class ApiDataSource {
     return apiResponse;
   }
 
-  Future<bool> hasToken() async {
-    var value = await storage.read(key: 'access_token');
+  Future hasToken() async {
+    final String? value = await storage.read(key: 'access_token');
     if (value != null) {
-      return true;
+      return value;
     } else {
-      return false;
+      return null;
     }
   }
 

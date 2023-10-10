@@ -20,10 +20,12 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     _onLoginButtonPressed() {
-      final request = RequestLogin(
-          email: emailController.text, password: passwordController.text);
-      BlocProvider.of<LoginBloc>(context)
-          .add(LoginButtonPressed(requestLogin: request));
+      if (_loginFormKey.currentState!.validate()) {
+        final request = RequestLogin(
+            email: emailController.text, password: passwordController.text);
+        BlocProvider.of<LoginBloc>(context)
+            .add(LoginButtonPressed(requestLogin: request));
+      }
     }
 
     return BlocListener<LoginBloc, LoginState>(
@@ -141,7 +143,10 @@ class _LoginPageState extends State<LoginPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  const Home()))
+                                                  RegisterRoute(
+                                                    apiDataSource:
+                                                        ApiDataSource(),
+                                                  )))
                                     },
                                     child: const Text(
                                       'Sign-up',

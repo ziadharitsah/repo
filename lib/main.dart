@@ -1,7 +1,7 @@
 import 'package:app/app/bloc/authenticated/auth_bloc.dart';
 import 'package:app/app/repositories/auth/api.dart';
 import 'package:app/resources/views/auth/pages.dart';
-import 'package:app/resources/views/dashboard/main_screen.dart';
+import 'package:app/resources/views/dashboard/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -40,11 +40,10 @@ class MyApp extends StatelessWidget {
       ),
       home: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
-          if (state is AuthenticationInit) {
-            context.read<AuthBloc>().add(AppStarted());
-          }
           if (state is AuthenticationAuthenticated) {
-            return const Home();
+            return MainScreen(
+              apiDataSource: apiDataSource,
+            );
           }
           if (state is AuthenticationUnauthenticated) {
             return LoginRoute(apiDataSource: apiDataSource);
@@ -54,7 +53,7 @@ class MyApp extends StatelessWidget {
               body: Container(
                 color: Colors.white,
                 width: MediaQuery.of(context).size.width,
-                child: Column(
+                child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [

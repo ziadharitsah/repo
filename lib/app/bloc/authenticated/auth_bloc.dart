@@ -1,5 +1,6 @@
-import 'package:app/app/models/auth/response/response_token.dart';
+import 'package:app/app/models/auth/response/response_user.dart';
 import 'package:app/app/repositories/auth/api.dart';
+import 'package:app/app/repositories/auth/api_response.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -11,10 +12,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({required this.repositories}) : super(AuthenticationInit()) {
     on<AppStarted>((event, emit) async {
       emit(AuthenticationLoading());
-      final bool hasToken = await repositories.hasToken();
+      final hasToken = await repositories.hasToken();
       print(' has ${hasToken.toString()}');
-      if (hasToken) {
+      if (hasToken != null) {
         emit(AuthenticationAuthenticated());
+
         // print(hasToken);
       } else {
         emit(AuthenticationUnauthenticated());
@@ -31,6 +33,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthenticationLoading());
       await repositories.deleteToken();
       emit(AuthenticationUnauthenticated());
+    });
+
+    on<UserData>((event, emit) async {
+      ApiResponse user = await repositories.user();
+      if (user.error == null) {
+        final data = user.data as ResponseUser;
+        print(data.user.name);
+        emit(UserLoaded(models: data));
+      } else {
+        emit(AuthenticationUnauthenticated());
+      }
     });
   }
 }
